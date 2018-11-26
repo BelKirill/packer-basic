@@ -1,0 +1,59 @@
+{
+  "variables": {
+    "src_base_dir": "../packages",
+    "jetty_package": "jetty-distribution-9.4.14.v20181114.tar.gz",
+    "war_file" :"sample.war"
+  },
+  "builders": [
+    {
+      "type": "docker",
+      "name": "jetty-example",
+      "image": "alpine",
+      "commit": true,
+      "run_command": ["-d", "-i", "-t", "{{.Image}}", "/bin/sh"],
+      "changes": [
+        "EXPOSE 8080",
+        "ENTRYPOINT /home/jetty/start_jetty.sh",
+        "USER jetty",
+        "LABEL packer=jetty"
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "script": "./add_shadow_and_update_apk.sh"
+    },
+    {
+      "type": "shell",
+      "script": "./add_user_jetty.sh"
+    },
+    {
+      "type": "shell",
+      "script": "./deploy_java.sh"
+    },
+    {
+      "type": "file",
+      "source": "{{ user `src_base_dir` }}/{{ user `jetty_package` }}",
+      "destination": "/home/jetty/jetty.tar.gz"
+    },
+    {
+      "type": "file",
+      "source": "./start_jetty.sh",
+      "destination": "/home/jetty/"
+    },
+    {
+      "type": "shell",
+      "script": "./deploy_jetty.sh"
+    },
+    {
+      "type": "file",
+      "source": "{{ user `src_base_dir` }}/{{ user `war-file` }}",
+      "destination": "/home/jetty/"
+    },
+    {
+      "type": "shell",
+      "script": "./deploy_example_war.sh"
+    }
+  ]
+}

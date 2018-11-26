@@ -1,0 +1,4 @@
+# Ignore locale install packages
+packages
+# Ignore docker-compose used in local testing
+**/docker-compose.yml
