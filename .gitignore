@@ -2,3 +2,4 @@
 packages
 # Ignore docker-compose used in local testing
 **/docker-compose.yml
+**/local-values.json

@@ -2,7 +2,10 @@
   "variables": {
     "src_base_dir": "../packages",
     "jetty_package": "jetty-distribution-9.4.14.v20181114.tar.gz",
-    "war_file" :"sample.war"
+    "war_file": "sample.war",
+
+    "docker_hub": "{{env `docker_hub_user`}}",
+    "docker_hub_cred": "{{env `docker_hub_cred`}}"
   },
   "builders": [
     {
@@ -55,5 +58,19 @@
       "type": "shell",
       "script": "./deploy_example_war.sh"
     }
-  ]
+  ],
+  "post-processors": [[
+    {
+      "type": "docker-tag",
+      "repository": "belkirill/experiments",
+      "tag": "jetty"
+    },
+    {
+      "type": "docker-push",
+      "login": true,
+      "login_username": "{{ user `docker_hub` }}",
+      "login_password": "{{ user `docker_hub_cred` }}"
+    }
+  ]]
+
 }
